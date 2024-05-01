@@ -6,11 +6,10 @@ This project provides a Chat-Completion experience tailored specifically for Inf
 
 [For more information on this template](https://github.com/Azure-Samples/openai/tree/main/End_to_end_Solutions/AOAISearchDemo)
 
-**This documentation is for v1 of Azure/Sample-Chat-Completion-OpenAI-Infra**
+**Note**: Please install the [Configure-Azure-Settings](https://github.com/apps/configure-azure-settings) app from the GitHub Marketplace to populate the below inputs as secrets in your repository
 
 ## Inputs
 
-Please install the Configure-Azure-Settings app from the GitHub Marketplace, on your repository, to populate the below inputs as secrets in your repository
 - **client-id** (required): Client ID used for Azure login.
 - **tenant-id** (required): Tenant ID used for Azure login.
 - **subscription-id** (required): Azure subscription ID used with the `az login`.
@@ -29,7 +28,7 @@ Use the name field from this link corresponding to desired location. [Azure Regi
 Create this workflow in your repo on this path: `.github/workflows/workflow_file.yml`
 
 ```yaml
-name: Workflow to deploy AI Powered Chat project to Azure
+name: Workflow to deploy AI Powered Chat Completion infra to Azure
 
 on:
   push:
@@ -56,7 +55,7 @@ jobs:
         - name: Checkout master
           uses: actions/checkout@v3
           
-        - name: Deploy a Open AI action
+        - name: Deploy the Open AI action
           uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v1
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
