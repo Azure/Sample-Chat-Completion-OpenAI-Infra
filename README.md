@@ -6,7 +6,7 @@ This project provides a Chat-Completion experience tailored specifically for Inf
 
 [For more information on this template](https://github.com/Azure-Samples/openai/tree/main/End_to_end_Solutions/AOAISearchDemo)
 
-**This documentation is for v2 of Azure/Sample-Chat-Completion-OpenAI-Infra**
+**This documentation is for v1 of Azure/Sample-Chat-Completion-OpenAI-Infra**
 
 ## Inputs
 
@@ -57,7 +57,7 @@ jobs:
           uses: actions/checkout@v3
           
         - name: Deploy a Open AI action
-          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v2
+          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v1
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
