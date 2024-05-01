@@ -1,0 +1,127 @@
+name: 'Deploy an OpenAI Model to Azure action'
+description: 'This action helps create an OpenAI search model'
+branding:
+  icon: 'play-circle'
+  color: 'blue'
+inputs:
+  client-id:
+    description: 'Client id to log in to azure'
+    required: true
+  tenant-id:
+    description: 'Tenant id to log in to azure'
+    required: true
+  subscription-id:
+    description: 'Subscription id to be used with your az login'
+    required: true
+  resource-group-name:
+    description: 'Resource group to deploy your resources to'
+    required: true
+  location:
+    description: 'Location to deploy OpenAI resource to'
+    required: true
+  principal-id:
+    description: 'FIC Service Principal ID'
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Checkout master'
+      uses: actions/checkout@v3
+
+    - name: 'az cli login'
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.client-id }}
+        tenant-id: ${{ inputs.tenant-id }}
+        subscription-id: ${{ inputs.subscription-id }}
+        enable-AzPSSession: true
+
+    # - name: Azure CLI script
+    #   uses: azure/cli@v2
+    #   with:
+    #     azcliversion: 2.58.0
+    #     inlineScript: |
+    #       az account get-access-token --scope https://vault.azure.net/.default
+          
+    # - name: Fetch OID token every 4 mins
+    #   shell: bash
+    #   run: |
+    #     while true; do
+    #       token_request=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
+    #       token_uri=$ACTIONS_ID_TOKEN_REQUEST_URL
+    #       token=$(curl -H "Authorization: bearer $token_request" "${token_uri}&audience=api://AzureADTokenExchange" | jq .value -r)
+    #       az login --service-principal -u ${{ inputs.client-id }} -t ${{ inputs.tenant-id }} --federated-token $token
+    #       # Sleep for 4 minutes
+    #       sleep 240
+    #     done &
+          
+    - name: 'Install azd'
+      uses: Azure/setup-azd@v0.1.0
+
+    - name: 'Install Nodejs'
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: 'Create directory'
+      run: mkdir airepo
+      shell: pwsh
+
+    - name: 'Change directory'
+      run: cd airepo
+      shell: pwsh
+
+    - name: 'List directories'
+      run: dir
+      shell: pwsh
+
+    - name: 'Update bot_config.yaml'
+      uses: fjogeleit/yaml-update-action@main
+      with:
+        valueFile: 'AOAISearchDemo/app/backend/bot_config.yaml'
+        commitChange: false
+        changes: |
+          {
+            "approach_classifier.openai_settings.engine": "classifier",
+            "structured_query_nl_to_sql.openai_settings.engine": "chat",
+            "structured_query_nl_to_sql.model_params.model_name": "gpt-4",
+            "structured_final_answer_generation.openai_settings.engine": "chat",
+            "unstructured_search_query_generation.openai_settings.engine": "chat",
+            "unstructured_final_answer_generation.openai_settings.engine": "chat",
+            "unstructured_final_answer_generation.model_params.model_name": "gpt-4",
+            "embeddings.openai_settings.engine": "embeddings"
+          }
+
+    - name: 'Update azure.yaml to skip Connect-AzAccount step'
+      uses: fjogeleit/yaml-update-action@main
+      with:
+        valueFile: 'AOAISearchDemo/azure.yaml'
+        commitChange: false
+        changes: |
+          {
+            "hooks.preprovision.run": "Install-Module AzureAD -Force;Get-AzContext"
+          }
+
+    - name: Install ODBC Driver for SQL Server v18
+      uses: Yarden-zamir/install-mssql-odbc@v1.0.2
+
+    
+    - name: Az powershell
+      uses: azure/powershell@v2
+      with:
+        inlineScript: |
+          azd auth login --client-id ${{ inputs.client-id }} --federated-credential-provider "github" --tenant-id ${{ inputs.tenant-id }}
+          cd AOAISearchDemo
+          Get-AzAccessToken -ResourceUrl "https://vault.azure.net"
+          Install-Module -Name Az -Force -RequiredVersion 11.5.0
+          $PSVersionTable
+          azd env new vsk51
+          azd env set AZURE_ENV_NAME "vsk51"
+          azd env set AZURE_LOCATION "eastus"
+          azd env set AZURE_OPENAI_LOCATION "southcentralus"
+          azd env set AZURE_SUBSCRIPTION_ID ${{ inputs.subscription-id }}
+          azd env set AZURE_PRINCIPAL_ID ${{ inputs.principal-id }}
+          Get-AzContext -ListAvailable
+          azd up --no-prompt -e vsk51
+        azPSVersion: "latest"

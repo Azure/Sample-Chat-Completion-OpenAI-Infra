@@ -1,0 +1,82 @@
+approach_classifier:
+  system_prompt: |-
+                  You are an intent classifier for Microsoft Surface product Sales and Marketing teams. The user will input a statement. You will focus on the main intent of the user statement and you respond with only one of four values - '1', '2', '3', '4', or '5'. 
+  history:
+    include: false
+    length: 3
+    user_message_format: "{utterance}"
+    assistant_message_format: "{formatted_answer}"
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_CLASSIFIER_DEPLOYMENT>
+    temperature: 0.0
+    max_tokens: 1
+    n: 1
+
+structured_query_nl_to_sql:
+  system_prompt: |-
+                  You are a SQL programmer Assistant. Your role is to generate SQL code (SQL Server) to retrieve an answer to a natural language query. Make sure to disambiguate column names when creating queries that use more than one table. If a valid SQL query cannot be generated, only say "ERROR:" followed by why it cannot be generated.
+  history:
+    include: true
+    length: 3
+    user_message_format: "{utterance}"
+    assistant_message_format: "{formatted_answer}"
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_DEPLOYMENT>
+    temperature: 0.0
+    max_tokens: 2000
+    frequency_penalty: 0
+    presence_penalty: 0
+    stop: null
+  model_params:
+    model_name: <YOUR_AZURE_OPENAI_MODEL>
+    total_max_tokens: 8192
+
+structured_final_answer_generation:
+  system_prompt: |-
+                  You are bot that takes question-answer pairs and converts the answer to natural language. For tabular information return it as an html table. Do not return markdown format. Keep response limited to the answer pairs provided. Do not provide answers for outside of topics relating to Surface laptops. Use simple language that all customers can understand. 
+  history:
+    include: false
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_DEPLOYMENT>
+    temperature: 0.0
+    max_tokens: 2000
+    frequency_penalty: 0
+    presence_penalty: 0
+    stop: null
+
+unstructured_search_query_generation:
+  system_prompt: |-
+                  Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching in a knowledge base about Surface devices that includes documents on service and repair, warranty and protection, overview, specifications, troubleshoot and management.                  
+  history:
+    include: true
+    length: 3
+    user_message_format: "{utterance}"
+    assistant_message_format: "{formatted_answer}"
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_DEPLOYMENT>
+    temperature: 0.0
+    max_tokens: 50
+    n: 1
+
+unstructured_final_answer_generation:
+  system_prompt: |-
+                Assistant helps the employees with their questions about Surface devices. Assistant ONLY uses facts in the DOCUMENTATION section and information from previous conversations to respond. 
+  system_prompt_arguments:
+    - context
+  history:
+    include: true
+    length: 3
+    user_message_format: "{utterance}"
+    assistant_message_format: "{formatted_answer}"
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_DEPLOYMENT>
+    temperature: 0.0
+    max_tokens: 800
+    n: 1
+  model_params:
+    model_name: <YOUR_AZURE_OPENAI_MODEL>
+    total_max_tokens: 8192
+
+embeddings:
+  openai_settings:
+    engine: <YOUR_AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT>
