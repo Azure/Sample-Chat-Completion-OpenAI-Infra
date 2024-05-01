@@ -1,5 +1,5 @@
-name: 'Deploy an OpenAI Model to Azure action'
-description: 'This action helps create an OpenAI search model'
+name: 'Deploy Open AI based chat infra to Azure'
+description: 'This action helps create all the resources necessary for a chat completion experience on azure'
 branding:
   icon: 'play-circle'
   color: 'blue'

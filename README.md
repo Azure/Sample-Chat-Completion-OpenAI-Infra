@@ -56,7 +56,7 @@ jobs:
           uses: actions/checkout@v3
           
         - name: Deploy the Open AI action
-          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v1
+          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v2
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
