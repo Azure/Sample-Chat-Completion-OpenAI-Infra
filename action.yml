@@ -1,5 +1,5 @@
-name: 'Deploy Open AI based chat infra to Azure'
-description: 'This action helps create all the resources necessary for a chat completion experience on azure'
+name: 'Deploy an OpenAI Model to Azure action'
+description: 'This action helps create an OpenAI search model'
 branding:
   icon: 'play-circle'
   color: 'blue'
@@ -13,15 +13,18 @@ inputs:
   subscription-id:
     description: 'Subscription id to be used with your az login'
     required: true
-  resource-group-name:
-    description: 'Resource group to deploy your resources to'
-    required: true
   location:
-    description: 'Location to deploy OpenAI resource to'
+    description: 'Location to deploy resources to'
+    required: true
+  openai-location:
+    description: 'Location to deploy OpenAI resources to'
     required: true
   principal-id:
     description: 'FIC Service Principal ID'
-    required: false
+    required: true
+  env-name:
+    description: 'Name of environment where env values are set'
+    required: true
 
 runs:
   using: 'composite'
@@ -47,10 +50,6 @@ runs:
 
     - name: 'Create directory'
       run: mkdir airepo
-      shell: pwsh
-
-    - name: 'List directories'
-      run: dir
       shell: pwsh
 
     - name: Checkout tools repo
@@ -97,14 +96,12 @@ runs:
           azd auth login --client-id ${{ inputs.client-id }} --federated-credential-provider "github" --tenant-id ${{ inputs.tenant-id }}
           cd airepo/AOAISearchDemo
           Get-AzAccessToken -ResourceUrl "https://vault.azure.net"
-          Install-Module -Name Az -Force -RequiredVersion 11.5.0
-          $PSVersionTable
-          azd env new v2-vsk51
-          azd env set AZURE_ENV_NAME "v2-vsk51"
-          azd env set AZURE_LOCATION "eastus"
-          azd env set AZURE_OPENAI_LOCATION "southcentralus"
+          azd env new ${{ inputs.env-name }}
+          azd env set AZURE_ENV_NAME "${{ inputs.env-name }}"
+          azd env set AZURE_LOCATION ${{ inputs.location }}
+          azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
           azd env set AZURE_SUBSCRIPTION_ID ${{ inputs.subscription-id }}
           azd env set AZURE_PRINCIPAL_ID ${{ inputs.principal-id }}
           Get-AzContext -ListAvailable
-          azd up --no-prompt -e v2-vsk51
+          azd up --no-prompt -e ${{ inputs.env-name }}
         azPSVersion: "latest"
