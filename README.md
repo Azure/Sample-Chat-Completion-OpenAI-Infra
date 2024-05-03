@@ -57,8 +57,8 @@ jobs:
         - name: Checkout master
           uses: actions/checkout@v3
           
-        - name: Forked - Deploy a Open AI action
-          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v3
+        - name: Deploy a Open AI action
+          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v4
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}

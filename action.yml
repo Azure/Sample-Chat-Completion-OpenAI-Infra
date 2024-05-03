@@ -1,5 +1,5 @@
-name: 'Deploy an OpenAI Model to Azure action'
-description: 'This action helps create an OpenAI search model'
+name: 'Azure Infrastructure for Open AI powered Chat'
+description: 'This action helps deploy Infrastructure to Azure that helps achieve a chat-completion experience powered by Open AI'
 branding:
   icon: 'play-circle'
   color: 'blue'
@@ -97,7 +97,7 @@ runs:
           cd airepo/AOAISearchDemo
           Get-AzAccessToken -ResourceUrl "https://vault.azure.net"
           azd env new ${{ inputs.env-name }}
-          azd env set AZURE_ENV_NAME "${{ inputs.env-name }}"
+          azd env set AZURE_ENV_NAME ${{ inputs.env-name }}
           azd env set AZURE_LOCATION ${{ inputs.location }}
           azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
           azd env set AZURE_SUBSCRIPTION_ID ${{ inputs.subscription-id }}
