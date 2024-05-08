@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project provides a Chat-Completion experience tailored specifically for Information about Surface Devices. It utilizes an external repository to reference the template. This specialized assistant can provide detailed information on Surface Devices, including specifications, troubleshooting, and warranty details. Additionally, it addresses inquiries related to sales, availability, and current trends.
+This action deploys a chat-assistant app based on Open AI-powered Large Language Model (LLM) and hosted on Azure. It deploys all the infrastructure the chat assistant needs, using an external repository to reference the template. This chat assistant is intended for demo purposes and can answer questions about Microsoft Surface devices, including specs, troubleshooting, warranties, availability, and current trends.
 
 [For more information on this template](https://github.com/Azure-Samples/openai/tree/main/End_to_end_Solutions/AOAISearchDemo)
 
@@ -57,8 +57,8 @@ jobs:
         - name: Checkout master
           uses: actions/checkout@v3
           
-        - name: Deploy a Open AI action
-          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v4
+        - name: Deploy an Open AI action
+          uses: Azure/Sample-Chat-Completion-OpenAI-Infra@v5
           with:
             client-id: ${{ secrets.AZURE_CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}

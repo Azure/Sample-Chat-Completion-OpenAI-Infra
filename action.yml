@@ -1,5 +1,5 @@
 name: 'Azure Infrastructure for Open AI powered Chat'
-description: 'This action helps deploy Infrastructure to Azure that helps achieve a chat-completion experience powered by Open AI'
+description: 'This action deploys a chat-assistant app based on Open AI-powered Large Language Model (LLM) and hosted on Azure. It deploys all the infrastructure the chat assistant needs, using an external repository to reference the template. This chat assistant is intended for demo purposes and can answer questions about Microsoft Surface devices, including specs, troubleshooting, warranties, availability, and current trends.'
 branding:
   icon: 'play-circle'
   color: 'blue'
