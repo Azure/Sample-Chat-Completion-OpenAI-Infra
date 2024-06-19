@@ -25,6 +25,18 @@ inputs:
   env-name:
     description: 'Name of environment where env values are set'
     required: true
+  principal-name:
+    description: 'FIC Service Principal Name'
+    required: true
+  documentintelligence-location:
+    decsription: 'Location to deploy Document Intelligence resources to'
+    required: true
+  bring-your-own-data:
+    description: 'Boolean to indicate if you are bringing your own data'
+    required: false
+  data-path:
+    description: 'Path to data to be used to train the OpenAI model'
+    required: false
 
 runs:
   using: 'composite'
@@ -55,53 +67,28 @@ runs:
     - name: Checkout tools repo
       uses: actions/checkout@v4
       with:
-        repository: vaibbavisk20/vskAOAISearchDemo
+        repository: vaibbavisk20/vsk-search-openai-demo-py
         path: airepo
 
-    - name: 'Update bot_config.yaml'
-      uses: fjogeleit/yaml-update-action@main
-      with:
-        valueFile: 'airepo/AOAISearchDemo/app/backend/bot_config.yaml'
-        commitChange: false
-        changes: |
-          {
-            "approach_classifier.openai_settings.engine": "classifier",
-            "structured_query_nl_to_sql.openai_settings.engine": "chat",
-            "structured_query_nl_to_sql.model_params.model_name": "gpt-4",
-            "structured_final_answer_generation.openai_settings.engine": "chat",
-            "unstructured_search_query_generation.openai_settings.engine": "chat",
-            "unstructured_final_answer_generation.openai_settings.engine": "chat",
-            "unstructured_final_answer_generation.model_params.model_name": "gpt-4",
-            "embeddings.openai_settings.engine": "embeddings"
-          }
-
-    - name: 'Update azure.yaml to skip Connect-AzAccount step'
-      uses: fjogeleit/yaml-update-action@main
-      with:
-        valueFile: 'airepo/AOAISearchDemo/azure.yaml'
-        commitChange: false
-        changes: |
-          {
-            "hooks.preprovision.run": "Install-Module AzureAD -Force;Get-AzContext"
-          }
-
-    - name: Install ODBC Driver for SQL Server v18
-      uses: Yarden-zamir/install-mssql-odbc@v1.0.2
-
-    
     - name: Az powershell
       uses: azure/powershell@v2
       with:
         inlineScript: |
+          cd airepo
+          dir
           azd auth login --client-id ${{ inputs.client-id }} --federated-credential-provider "github" --tenant-id ${{ inputs.tenant-id }}
-          cd airepo/AOAISearchDemo
           Get-AzAccessToken -ResourceUrl "https://vault.azure.net"
           azd env new ${{ inputs.env-name }}
           azd env set AZURE_ENV_NAME ${{ inputs.env-name }}
           azd env set AZURE_LOCATION ${{ inputs.location }}
-          azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
           azd env set AZURE_SUBSCRIPTION_ID ${{ inputs.subscription-id }}
           azd env set AZURE_PRINCIPAL_ID ${{ inputs.principal-id }}
+          azd env set AZURE_PRINCIPAL_NAME ${{ inputs.principal-name }}  
+          azd env set AZURE_OPENAI_LOCATION ${{ inputs.openai-location }}
+          azd env set AZURE_DOCUMENTINTELLIGENCE_LOCATION ${{ inputs.documentintelligence-location }}
+          azd env set BRING_YOUR_OWN_DATA ${{ inputs.bring-your-own-data }}
+          azd env set CUSTOM_DATA_PATH ${{ inputs.data-path }}
           Get-AzContext -ListAvailable
+          azd env get-values
           azd up --no-prompt -e ${{ inputs.env-name }}
         azPSVersion: "latest"
