@@ -13,29 +13,47 @@ permissions:
   id-token: write
   contents: read
 
-
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
   deploy-resources-to-azure:
     runs-on: ubuntu-latest
+    needs: build
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_PRINCIPAL_ID: ${{ secrets.AZURE_MANAGEDIDENTITY_PRINCIPAL_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RG: ${{ vars.AZURE_RG }}
     steps:
-        - name: Checkout master
-          uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           
-        - name: Deploy Open AI infrastructure action execution
-          uses: ./
-          with:
-              client-id: ${{ secrets.AZURE_CLIENT_ID }}
-              tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-              principal-id: ${{ secrets.AZURE_APP_ID }}
-              subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-              location: ${{ vars.AZURE_LOCATION }}
-              env-name: ${{ vars.AZURE_ENV_NAME }}
-              principal-name: ${{ secrets.AZURE_APP_NAME }}
-              openai-location: ${{ vars.AZURE_OPENAI_LOCATION }}
-              documentintelligence-location: ${{ vars.AZURE_DOCUMENTINTELLIGENCE_LOCATION }}
-              bring-your-own-data: true
-              data-path: "mydata"
+      - name: Deploy Open AI infrastructure action execution
+        uses: ./
+        with:
+          location: ${{ vars.AZURE_LOCATION }}
+          env-name: ${{ vars.AZURE_ENV_NAME }}
+          openai-location: ${{ vars.AZURE_OPENAI_LOCATION }}
+          documentintelligence-location: ${{ vars.AZURE_DOCUMENTINTELLIGENCE_LOCATION }}
+          bring-your-own-data: true
+          data-path: "mydata"
+          additional-args: '{
+            "AZURE_APP_SERVICE_SKU":"B2", 
+            "AZURE_OPENAI_CHATGPT_MODEL":"gpt-35-turbo", 
+            "AZURE_OPENAI_EMB_DEPLOYMENT_CAPACITY":"40"
+            }'
+
+              
