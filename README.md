@@ -10,7 +10,7 @@ Template: [ChatGPT-like app with your data using Azure OpenAI and Azure AI Searc
 
 1. If you're new to Azure, [get an Azure account for free](https://azure.microsoft.com/free/cognitive-search/) and you'll get some free Azure credits to get started.
 2. Your Azure Subscription will need to have access to Azure OpenAI service [OpenAI access request process](https://aka.ms/oai/access)
-3. Please install the [Configure-Azure-Settings](https://github.com/apps/configure-azure-settings) app from the GitHub Marketplace to populate all of the inputs needed for Azure login and resource deployment. This app will populate the inputs as secrets in your repositories.
+3. Please install the [Configure-Azure-Settings](https://github.com/marketplace/configure-azure-settings) app from the GitHub Marketplace to populate all of the inputs needed for Azure login and resource deployment. This app will populate the inputs as secrets in your repositories.
    - **client-id** (required): Client ID used for Azure login, set as **AZURE_CLIENT_ID** in repo secrets.
    - **tenant-id** (required): Tenant ID used for Azure login, set as **AZURE_TENANT_ID** in repo secrets.
    - **subscription-id** (required): Azure subscription ID used with the `az login`, set as **AZURE_SUBSCRIPTION_ID** in repo variables.
